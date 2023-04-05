@@ -1,0 +1,114 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.7.2'
+    id 'io.spring.dependency-management' version '1.0.12.RELEASE'
+    id 'maven-publish'
+}
+
+group = 'com.tfswx'
+version = '0.0.2'
+sourceCompatibility = '1.8'
+
+jar {
+    enabled = true
+    bootJar.enabled = false
+    archiveClassifier = 'SNAPSHOT'
+    manifest {
+        attributes('Implementation-Title': 'Gradle',
+                'Implementation-Version': archiveVersion)
+    }
+}
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    maven {
+        allowInsecureProtocol true
+        url "http://192.168.7.197:8081/repository/maven-public/"
+    }
+//    mavenCentral()
+}
+
+dependencies {
+    implementation("cn.hutool:hutool-all:5.7.22")
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.zaxxer:HikariCP:3.4.1'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.apache.poi:poi-ooxml:5.2.2'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+    implementation 'org.springframework:spring-jdbc:5.3.9'
+    // 达梦驱动
+//    runtimeOnly 'dm.jdbc:DmJdbcDriver18:8.1.2.114'
+    // mysql驱动
+    runtimeOnly 'mysql:mysql-connector-java'
+    //编译引入其他Jar包
+    implementation fileTree(dir: 'lib', includes: ['*jar'])
+
+    // sql构建和解析相关
+    implementation 'com.alibaba:druid:1.2.14'
+    implementation 'io.github.freakchick:orange:1.0'
+
+    implementation 'cn.easyproject:orai18n:12.1.0.2.0'
+    //oracle
+//    implementation 'com.oracle.database.jdbc:ojdbc8:19.3.0.0'
+    implementation 'ru.yandex.clickhouse:clickhouse-jdbc:0.3.2'
+}
+
+//tasks.named('test') {
+//    useJUnitPlatform()
+//}
+
+apply plugin: 'maven-publish'
+
+publishing {
+//    repositories {
+//        maven {
+//            credentials {
+//                username 'admin' // 仓库发布用户名
+//                password 'tfswx@2022' // 仓库发布用户密码
+//            }
+//            url 'http://192.168.7.197:8081/repository/maven-releases/' // 仓库地址
+//        }
+//    }
+    //                    repository(url: "http://192.168.7.197:8081/repository/maven-releases/") {
+//                        authentication(userName: "admin", password: "admin123")
+//                    }
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.tfswx' // groupId
+            artifactId 'dbmigrate' // artifactId
+            version '0.0.1' // 发布版本
+            description 'This is a dbmigrate to v0.0.1' // 说明描述
+            artifact "${project.buildDir}/libs/${project.name}-0.0.1.jar"
+//            pom.withXml{
+//                def dependenciesNode = asNode().appendNode("dependencies")
+//                // 添加一个依赖
+//                def dependencyNode = dependenciesNode.appendNode('dependency')
+//                dependencyNode.appendNode('groupId', dependency.group)
+//                dependencyNode.appendNode('artifactId', dependency.name)
+//                dependencyNode.appendNode('version', dependency.version)
+//                // 逐一添加第三方依赖。。。
+//            }
+
+            // 如果依赖比较多，有个更简洁的方式就是读取配置的依赖配置，逐一添加。这种方法在依赖变更之后，也会自动识别，如下所示
+//            pom.withXml{
+//                def dependenciesNode = asNode().appendNode("dependencies")
+//                configurations.implementation.allDependencies.forEach(){
+//                    Dependency dependency ->
+//                        if (dependency.version != "unspecified" && dependency.name != "unspecified"){
+//                            def dependencyNode = dependenciesNode.appendNode('dependency')
+//                            dependencyNode.appendNode('groupId', dependency.group)
+//                            dependencyNode.appendNode('artifactId', dependency.name)
+//                            dependencyNode.appendNode('version', dependency.version)
+//                        }
+//                }
+//            }
+        }
+    }
+}
